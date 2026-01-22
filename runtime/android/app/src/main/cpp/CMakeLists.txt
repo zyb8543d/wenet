@@ -27,6 +27,7 @@ add_subdirectory(decoder)
 
 link_libraries(frontend decoder android)
 add_library(${TARGET} SHARED wenet.cc)
+set_target_properties(${TARGET} PROPERTIES LINK_FLAGS "-Wl,-rpath,/system/lib64:/lib64:/data/local/tmp/lib")
 
 add_executable(decoder_main bin/decoder_main.cc)
 target_link_libraries(decoder_main PUBLIC libc++_shared.so)
