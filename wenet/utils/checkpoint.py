@@ -21,8 +21,37 @@ import torch
 from collections import OrderedDict
 
 import datetime
-
-
+#扩展词典后避免形状不匹配报错
+"""
+def load_checkpoint(model: torch.nn.Module, path: str) -> dict:
+    rank = int(os.environ.get('RANK', 0))
+    logging.info('[Rank {}] Checkpoint: loading from checkpoint {}'.format(
+        rank, path))
+    checkpoint = torch.load(path, map_location='cpu', mmap=True)
+    model_state_dict = model.state_dict()  # 加载模型的state_dict
+    filtered_checkpoint = {}
+    for k, v in checkpoint.items():
+        if k in model_state_dict and v.shape == model_state_dict[k].shape:
+            filtered_checkpoint[k] = v
+        else:
+            if rank == 0:
+                logging.warning(f"Skip loading parameter: {k}, "
+                                f"checkpoint shape: {v.shape}, "
+                                f"model shape: {model_state_dict.get(k, None).shape if k in model_state_dict else None}")
+    missing_keys, unexpected_keys = model.load_state_dict(filtered_checkpoint, strict=False)
+    if rank == 0:
+        for key in missing_keys:
+            logging.info("missing tensor: {}".format(key))
+        for key in unexpected_keys:
+            logging.info("unexpected tensor: {}".format(key))
+    info_path = re.sub('.pt$', '.yaml', path)
+    #import pdb; pdb.set_trace()
+    configs = {}
+    if os.path.exists(info_path):
+        with open(info_path, 'r') as fin:
+            configs = yaml.load(fin, Loader=yaml.FullLoader)
+    return configs
+"""
 def load_checkpoint(model: torch.nn.Module, path: str) -> dict:
     if torch.cuda.is_available():
         logging.info('Checkpoint: loading from checkpoint %s for GPU' % path)
