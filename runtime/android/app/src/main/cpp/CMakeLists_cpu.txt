@@ -1,0 +1,36 @@
+cmake_minimum_required(VERSION 3.4.1)
+set(CMAKE_CXX_STANDARD_LIBRARIES "${CMAKE_CXX_STANDARD_LIBRARIES} -latomic")
+set(TARGET wenet)
+project(${TARGET} CXX)
+set(CMAKE_CXX_STANDARD 14)
+include(ExternalProject)
+
+option(TORCH "whether to build with Torch" OFF)
+option(ONNX "whether to build with ONNX" OFF)
+option(TFLITE "whether to build with TFLITE" OFF)
+option(DLA "whether to build with TFLITE" ON)
+set(CMAKE_VERBOSE_MAKEFILE on)
+set(build_DIR ${CMAKE_SOURCE_DIR}/../../../build)
+list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
+string(REPLACE "-Wl,--exclude-libs,libgcc_real.a" "" CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS}")
+
+#include(dla)
+include(openfst)
+
+include_directories(
+  ${CMAKE_SOURCE_DIR}
+  ${CMAKE_SOURCE_DIR}/kaldi
+)
+
+add_subdirectory(utils)
+add_subdirectory(frontend)
+add_subdirectory(post_processor)
+add_subdirectory(kaldi)  # kaldi: wfst based decoder
+add_subdirectory(decoder)
+
+link_libraries(frontend decoder android)
+add_library(${TARGET} SHARED wenet.cc)
+set_target_properties(${TARGET} PROPERTIES LINK_FLAGS "-Wl,-rpath,/system/vendor/lib64:/vendor/lib64:/system/lib64:/data/local/tmp/lib")
+
+add_executable(decoder_main bin/decoder_main.cc)
+target_link_libraries(decoder_main PUBLIC libc++_shared.so)
