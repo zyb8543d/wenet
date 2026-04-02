@@ -1,0 +1,36 @@
+set(decoder_srcs
+  asr_decoder.cc
+  asr_model.cc
+  context_graph.cc
+  ctc_prefix_beam_search.cc
+  ctc_wfst_beam_search.cc
+  ctc_endpoint.cc
+)
+
+if(NOT TORCH AND NOT ONNX AND NOT TFLITE AND NOT DLA)
+  message(FATAL_ERROR "Please build with TORCH or ONNX or TFLITE!!!")
+endif()
+if(TORCH)
+  list(APPEND decoder_srcs torch_asr_model.cc)
+endif()
+if(ONNX)
+  list(APPEND decoder_srcs onnx_asr_model.cc)
+endif()
+if(TFLITE)
+  list(APPEND decoder_srcs tflite_asr_model.cc)
+endif()
+if(DLA)
+    list(APPEND decoder_srcs dla_asr_model.cc)
+endif()
+
+add_library(decoder STATIC ${decoder_srcs})
+set_target_properties(decoder PROPERTIES LINK_FLAGS "-Wl,-rpath,/system/vendor/lib64:/system/lib64:/data/local/tmp/lib")
+target_link_libraries(decoder PUBLIC kaldi-decoder frontend post_processor utils)
+
+if(ANDROID)
+  include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include)
+  set_target_properties(decoder PROPERTIES LINK_FLAGS "-Wl,-rpath,/system/vendor/lib64:/system/lib64:/data/local/tmp/lib")
+  target_link_libraries(decoder PUBLIC
+          D:/code/android_project/wenet-dla/runtime/device/android/wenet/app/src/main/cpp/lib/libneuron_runtime.8.so
+  )
+endif()
