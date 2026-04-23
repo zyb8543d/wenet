@@ -5,8 +5,8 @@
     # GIT_TAG        origin/master
     #)
   # 设置本地路径
-  set(LOCAL_WETEXTPROCESSING_PATH "wetextprocessing-src-dir")            
-  FetchContent_Declare(wetextprocessing SOURCE_DIR ${LOCAL_WETEXTPROCESSING_PATH})  # 使用本地文件夹
+  #set(LOCAL_WETEXTPROCESSING_PATH "wetextprocessing-src-dir")            
+  #FetchContent_Declare(wetextprocessing SOURCE_DIR ${LOCAL_WETEXTPROCESSING_PATH})  # 使用本地文件夹
   FetchContent_MakeAvailable(wetextprocessing)
   include_directories(${wetextprocessing_SOURCE_DIR}/runtime)
   add_subdirectory(${wetextprocessing_SOURCE_DIR}/runtime/utils)
@@ -31,6 +31,15 @@ else()
     CMAKE_ARGS ${ANDROID_CMAKE_ARGS}
     INSTALL_COMMAND ""
   )
+  #设置本地路径
+  #set(LOCAL_WETEXTPROCESSING_PATH "" CACHE PATH "${SOURCE_DIR}/../../../build/.cxx/cmake/debug/arm64-v8a/wetextprocessing-prefix/src/wetextprocessing")
+  #ExternalProject_Add(wetextprocessing
+  #        SOURCE_DIR ${LOCAL_WETEXTPROCESSING_PATH}
+  #        DOWNLOAD_COMMAND ""
+  #        SOURCE_SUBDIR runtime
+  #        CMAKE_ARGS ${ANDROID_CMAKE_ARGS}
+  #        INSTALL_COMMAND ""
+  #)
   ExternalProject_Get_Property(wetextprocessing SOURCE_DIR BINARY_DIR)
   include_directories(${SOURCE_DIR}/runtime)
   link_directories(${BINARY_DIR}/processor ${BINARY_DIR}/utils)
