@@ -26,7 +26,7 @@ else()
   )
   ExternalProject_Add(wetextprocessing
     GIT_REPOSITORY https://github.com/wenet-e2e/WeTextProcessing.git
-    GIT_TAG origin/master
+    GIT_TAG bb14572 #origin/master
     SOURCE_SUBDIR runtime
     CMAKE_ARGS ${ANDROID_CMAKE_ARGS}
     INSTALL_COMMAND ""
